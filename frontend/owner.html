@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ParkGuard — Owner Portal</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./css/portal.css" />
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="topbar">
+    <div class="topbar-inner container">
+      <a class="brand" href="./index.html">
+        <span class="brand-mark">PG</span>
+        <div>
+          <div>ParkGuard</div>
+          <div class="brand-sub">Owner Portal • Respond to Alerts</div>
+        </div>
+      </a>
+
+      <div class="actions">
+        <span class="pill"><span class="dot"></span>System Online</span>
+        <button class="btn btn-ghost small" id="btnTheme" type="button">Toggle Theme</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="page container">
+    <div class="grid">
+
+      <!-- LEFT: Find Alert -->
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <div class="title">Find Your Alert</div>
+            <div class="subtitle">Enter your vehicle number to view and respond.</div>
+          </div>
+          <button class="btn btn-ghost small" id="btnPastePlate" type="button">Paste</button>
+        </div>
+
+        <div class="panel-body">
+          <div class="form" style="display:grid; gap:12px;">
+            <div class="row">
+              <label for="ownerPlate">Vehicle Plate Number</label>
+              <input id="ownerPlate" placeholder="Example: TN09AB1234" maxlength="14" />
+              <div class="helper">Tip: You can type without spaces (we format).</div>
+            </div>
+
+            <div class="two">
+              <button class="btn btn-primary" id="btnFind" type="button">Find Alert</button>
+              <button class="btn btn-ghost" id="btnRefresh" type="button">Refresh</button>
+            </div>
+
+            <hr class="sep" />
+
+            <div class="kpi-row">
+              <div class="kpi">
+                <div class="kpi-num" id="kpiFound">0</div>
+                <div class="kpi-label">Matching alerts</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-num" id="kpiLatestMin">—</div>
+                <div class="kpi-label">Latest age (min)</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-num" id="kpiStatus">—</div>
+                <div class="kpi-label">Latest status</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT: Alert + Response -->
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <div class="title">Respond</div>
+            <div class="subtitle">Send a quick response to the guard.</div>
+          </div>
+
+          <span id="lastUpdated" style="font-size:12px; opacity:0.7; font-weight:700;">
+            Waiting…
+          </span>
+        </div>
+
+        <div class="panel-body">
+          <!-- Alert card -->
+          <div id="alertCard" class="item" style="display:none;">
+            <div class="item-top">
+              <div>
+                <div class="plate" id="cardPlate">—</div>
+                <div class="meta" id="cardMeta1">—</div>
+                <div class="meta" id="cardMeta2">—</div>
+                <div class="meta" id="cardMeta3" style="display:none;"></div>
+              </div>
+              <div id="cardStatusChip"></div>
+            </div>
+
+            <div class="meta" id="cardNote" style="margin-top:10px; display:none;"></div>
+
+            <hr class="sep" style="margin:14px 0;" />
+
+            <div class="helper" style="margin-bottom:10px;">
+              Quick responses:
+            </div>
+
+            <div class="chips" style="flex-wrap:wrap; gap:10px;">
+              <button class="btn small" data-response="I will move in 5 minutes">I will move in 5 minutes</button>
+              <button class="btn small" data-response="I will move now">I will move now</button>
+              <button class="btn small" data-response="Not my vehicle">Not my vehicle</button>
+              <button class="btn small" data-response="Please call me">Please call me</button>
+            </div>
+
+            <div class="row" style="margin-top:14px;">
+              <label for="customResponse">Custom message (optional)</label>
+              <textarea id="customResponse" placeholder="Example: I’m coming down in 2 minutes."></textarea>
+            </div>
+
+            <div class="two" style="margin-top:10px;">
+              <button class="btn btn-primary" id="btnSendResponse" type="button">Send Response</button>
+              <button class="btn btn-ghost" id="btnClearMsg" type="button">Clear</button>
+            </div>
+
+            <div class="helper" style="margin-top:12px;">
+              This response updates the alert status to <b>Responded</b>.
+            </div>
+          </div>
+
+          <!-- Empty state -->
+          <div id="emptyState" class="helper" style="margin-top:10px;">
+            Enter your plate and click <b>Find Alert</b>. If no alert exists, it will show “No results”.
+          </div>
+
+          <!-- Recent list -->
+          <div style="margin-top:16px;">
+            <div class="helper" style="font-weight:800; margin-bottom:8px;">Recent matching alerts</div>
+            <div class="list" id="recentList"></div>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <div class="toast-title" id="toastTitle">Sent</div>
+    <div class="toast-sub" id="toastSub">Response delivered.</div>
+  </div>
+
+  <script src="./js/owner.js"></script>
+</body>
+</html>

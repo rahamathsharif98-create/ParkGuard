@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ParkGuard — Guard Portal</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./css/portal.css" />
+</head>
+
+<body>
+  <!-- ================= HEADER ================= -->
+  <header class="topbar">
+    <div class="topbar-inner container">
+      <a class="brand" href="./index.html">
+        <span class="brand-mark">PG</span>
+        <div>
+          <div>ParkGuard</div>
+          <div class="brand-sub">Guard Portal • Alert Console</div>
+        </div>
+      </a>
+
+      <div class="actions">
+        <span class="pill"><span class="dot"></span>System Online</span>
+        <button class="btn btn-ghost small" id="btnTheme" type="button">Toggle Theme</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= MAIN ================= -->
+  <main class="page container">
+    <div class="grid">
+
+      <!-- ================================================= -->
+      <!-- LEFT: CREATE ALERT -->
+      <!-- ================================================= -->
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <div class="title">Create Alert</div>
+            <div class="subtitle">Fast, polite, trackable parking resolution.</div>
+          </div>
+          <button class="btn btn-ghost small" id="btnFillDemo" type="button">Fill demo</button>
+        </div>
+
+        <div class="panel-body">
+          <form class="form" id="alertForm">
+
+            <div class="row">
+              <label for="plate">Vehicle Plate Number</label>
+              <input id="plate" name="plate" placeholder="Example: TN09AB1234" maxlength="14" required />
+              <div class="helper">Tip: Enter without spaces. We’ll format it automatically.</div>
+            </div>
+
+            <div class="two">
+              <div class="row">
+                <label for="property">Property</label>
+                <select id="property" name="property" required>
+                  <option value="">Select property</option>
+                  <option>Green Residency</option>
+                  <option>Skyline Towers</option>
+                  <option>City Mall Parking</option>
+                </select>
+              </div>
+
+              <div class="row">
+                <label for="zone">Zone</label>
+                <select id="zone" name="zone" required>
+                  <option value="">Select zone</option>
+                  <option>Reserved</option>
+                  <option>Visitor</option>
+                  <option>No Parking</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="two">
+              <div class="row">
+                <label for="reason">Reason</label>
+                <select id="reason" name="reason" required>
+                  <option value="">Select reason</option>
+                  <option>Private / Reserved Slot</option>
+                  <option>Blocking Exit / Gate</option>
+                  <option>Wrong Area (No Parking)</option>
+                  <option>Double Parking</option>
+                </select>
+              </div>
+
+              <div class="row">
+                <label for="urgency">Urgency</label>
+                <select id="urgency" name="urgency" required>
+                  <option>Normal</option>
+                  <option>High</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row">
+              <label for="note">Note (optional)</label>
+              <textarea id="note" name="note" placeholder="Example: Please move within 5 minutes to avoid towing."></textarea>
+            </div>
+
+            <div class="two">
+              <button class="btn btn-primary" type="submit">Send Alert</button>
+              <button class="btn btn-ghost" id="btnClear" type="button">Clear</button>
+            </div>
+
+            <hr class="sep" />
+
+            <div class="kpi-row">
+              <div class="kpi">
+                <div class="kpi-num" id="kpiSent">0</div>
+                <div class="kpi-label">Alerts sent today</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-num" id="kpiResolved">0</div>
+                <div class="kpi-label">Resolved</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi-num" id="kpiAvg">0</div>
+                <div class="kpi-label">Avg response (min)</div>
+              </div>
+            </div>
+
+          </form>
+        </div>
+      </section>
+
+      <!-- ================================================= -->
+      <!-- RIGHT: LIVE ALERTS -->
+      <!-- ================================================= -->
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <div class="title">Live Alerts</div>
+            <div class="subtitle">Track status and escalate when needed.</div>
+          </div>
+
+          <!-- Controls -->
+          <div style="display:flex; gap:8px; align-items:center;">
+            <input
+              id="searchBox"
+              placeholder="Search plate..."
+              style="padding:8px 10px;border-radius:10px;border:1px solid #333;background:#111;color:white;font-size:12px;"
+            />
+
+            <select
+              id="statusFilter"
+              style="padding:8px 10px;border-radius:10px;border:1px solid #333;background:#111;color:white;font-size:12px;font-weight:700;"
+            >
+              <option value="all">All</option>
+              <option value="sent">Sent</option>
+              <option value="viewed">Viewed</option>
+              <option value="responded">Responded</option>
+              <option value="escalated">Escalated</option>
+              <option value="resolved">Resolved</option>
+            </select>
+
+            <button class="btn btn-ghost small" id="btnAddSample" type="button">Add sample</button>
+
+            <!-- ✅ NEW: Export CSV -->
+            <button class="btn btn-ghost small" id="btnExportCSV" type="button">Export CSV</button>
+
+            <span id="lastUpdated" style="font-size:12px; opacity:0.7; font-weight:700;">
+              Updated just now
+            </span>
+          </div>
+        </div>
+
+        <div class="panel-body">
+          <div class="list" id="alertsList"></div>
+
+          <div class="helper" style="margin-top:12px;">
+            Tip: Use search + filter to quickly find a vehicle. “Updated … ago” shows the dashboard freshness.
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <div class="toast-title" id="toastTitle">Sent</div>
+    <div class="toast-sub" id="toastSub">Alert delivered.</div>
+  </div>
+
+  <script src="./js/guard.js"></script>
+</body>
+</html>
+

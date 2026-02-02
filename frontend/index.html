@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ParkGuard — Smart Parking Alerts</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/styles.css" />
+</head>
+<body>
+  <!-- Top Nav -->
+  <header class="nav">
+    <div class="nav-inner container">
+      <a class="brand" href="#">
+        <span class="brand-mark" aria-hidden="true">PG</span>
+        <span class="brand-name">ParkGuard</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#how">How it works</a>
+        <a href="#features">Features</a>
+        <a href="#trust">Trust</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="btn btn-ghost" id="btnTheme" type="button" aria-label="Toggle theme">
+          <span id="themeLabel">Dark</span>
+        </button>
+        <a class="btn btn-primary" href="#portals">Open Portals</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <main class="hero">
+    <div class="hero-bg" aria-hidden="true"></div>
+
+    <section class="container hero-inner">
+      <div class="hero-left">
+        <div class="pill">
+          <span class="dot"></span>
+          Trusted Parking Protection • Instant Alerts • Zero Conflict
+        </div>
+
+        <h1 class="hero-title">
+          Guard your parking spaces.
+          <span class="accent">Alert owners instantly.</span>
+        </h1>
+
+        <p class="hero-subtitle">
+          ParkGuard helps apartments and public parking teams resolve wrong-parking fast —
+          with instant alerts, response tracking, and escalation when needed.
+        </p>
+
+        <div class="hero-cta">
+          <a class="btn btn-primary btn-lg" href="#portals">Get Started</a>
+          <a class="btn btn-ghost btn-lg" href="#how">See how it works</a>
+        </div>
+
+        <div class="hero-stats">
+          <div class="stat">
+            <div class="stat-number" data-count="10">0</div>
+            <div class="stat-label">sec to send alert</div>
+          </div>
+          <div class="stat">
+            <div class="stat-number" data-count="60">0</div>
+            <div class="stat-label">% less waiting</div>
+          </div>
+          <div class="stat">
+            <div class="stat-number" data-count="24">0</div>
+            <div class="stat-label">x7 support-ready</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-right">
+        <div class="glass-card">
+          <div class="glass-head">
+            <div class="badge-secure">
+              <span class="shield" aria-hidden="true">🛡️</span>
+              Secure Alert Console
+            </div>
+            <div class="pulse" title="System online"></div>
+          </div>
+
+          <div class="mock">
+            <div class="mock-row">
+              <span class="label">Vehicle Plate</span>
+              <div class="field">TN 09 AB 1234</div>
+            </div>
+            <div class="mock-row">
+              <span class="label">Reason</span>
+              <div class="field">Private / Reserved slot</div>
+            </div>
+            <div class="mock-row">
+              <span class="label">Property</span>
+              <div class="field">Green Residency</div>
+            </div>
+
+            <div class="mock-actions">
+              <button class="btn btn-primary" type="button">Send Alert</button>
+              <button class="btn btn-ghost" type="button">Escalate</button>
+            </div>
+
+            <div class="mock-status">
+              <span class="chip chip-info">Status: Sent</span>
+              <span class="chip chip-good">Owner: Coming in 2 mins</span>
+            </div>
+          </div>
+
+          <div class="trust-strip">
+            <div class="trust-item">
+              <div class="trust-icon">✅</div>
+              <div>
+                <div class="trust-title">No stickers needed</div>
+                <div class="trust-sub">Plate-based alerts</div>
+              </div>
+            </div>
+            <div class="trust-item">
+              <div class="trust-icon">🔒</div>
+              <div>
+                <div class="trust-title">Privacy-first</div>
+                <div class="trust-sub">Masked contact options</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mini-note">
+          <span class="spark" aria-hidden="true">✨</span>
+          Designed to feel safe, calm, and trustworthy — even in stressful parking moments.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- How it works -->
+  <section id="how" class="section container">
+    <div class="section-head">
+      <h2>How ParkGuard works</h2>
+      <p>Simple flow. Fast resolution. No arguments.</p>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Guard enters plate</h3>
+        <p>Type the vehicle number, choose reason & property, then send.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Owner gets alert</h3>
+        <p>Owner receives message + quick reply buttons.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Escalate if needed</h3>
+        <p>If no response, escalate via call/SMS or towing warning.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features" class="section container">
+    <div class="section-head">
+      <h2>Built for trust and speed</h2>
+      <p>Security-grade design, but friendly for everyone.</p>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h3>Instant alerts</h3>
+        <p>Send alerts in seconds with a minimal guard console.</p>
+      </div>
+      <div class="card">
+        <h3>Status tracking</h3>
+        <p>Sent → Viewed → Responded → Resolved. Everyone stays calm.</p>
+      </div>
+      <div class="card">
+        <h3>Privacy controls</h3>
+        <p>No public phone number sharing. Keep interactions safe.</p>
+      </div>
+      <div class="card">
+        <h3>Audit logs</h3>
+        <p>Every action is logged to prevent misuse and disputes.</p>
+      </div>
+      <div class="card">
+        <h3>Works anywhere</h3>
+        <p>Phone browser, tablet, desktop — no app required for MVP.</p>
+      </div>
+      <div class="card">
+        <h3>Escalation rules</h3>
+        <p>Automatic reminders and escalation when owners don’t respond.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Portals -->
+  <section id="portals" class="section container">
+    <div class="section-head">
+      <h2>Choose your portal</h2>
+      <p>Start as Guard/Admin or as Vehicle Owner.</p>
+    </div>
+
+    <div class="portal-grid">
+      <a class="portal" href="./guard.html">
+        <div class="portal-top">
+          <div class="portal-icon">🛡️</div>
+          <div>
+            <div class="portal-title">Guard Portal</div>
+            <div class="portal-sub">Send alerts, track status, escalate</div>
+          </div>
+        </div>
+        <div class="portal-cta">Open Guard Portal →</div>
+      </a>
+
+      <a class="portal" href="./owner.html">
+        <div class="portal-top">
+          <div class="portal-icon">🚗</div>
+          <div>
+            <div class="portal-title">Owner Portal</div>
+            <div class="portal-sub">Receive alerts, respond in one tap</div>
+          </div>
+        </div>
+        <div class="portal-cta">Open Owner Portal →</div>
+      </a>
+    </div>
+
+    <div class="note">
+      Don’t worry — we’ll connect these to backend APIs next.
+      Today we’re building a UI that feels secure and professional.
+    </div>
+  </section>
+
+  <!-- Trust -->
+  <section id="trust" class="section container">
+    <div class="section-head">
+      <h2>Trust-first design</h2>
+      <p>People accept systems they can trust.</p>
+    </div>
+
+    <div class="trust-cards">
+      <div class="card">
+        <h3>Clear messaging</h3>
+        <p>Polite, non-threatening alerts reduce conflict and improve compliance.</p>
+      </div>
+      <div class="card">
+        <h3>Role-based access</h3>
+        <p>Only verified guards/admins can send alerts for a property.</p>
+      </div>
+      <div class="card">
+        <h3>Anti-misuse</h3>
+        <p>Rate limits + logs to stop spam or harassment.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-left">
+        <div class="brand small">
+          <span class="brand-mark">PG</span>
+          <span class="brand-name">ParkGuard</span>
+        </div>
+        <p class="muted">Smart Parking Protection & Alerts — Web MVP</p>
+      </div>
+      <div class="footer-right muted">
+        © <span id="year"></span> ParkGuard • Built by you 💪
+      </div>
+    </div>
+  </footer>
+
+  <script src="./js/main.js"></script>
+</body>
+</html>
