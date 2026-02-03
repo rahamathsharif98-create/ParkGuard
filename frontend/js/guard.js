@@ -1,9 +1,10 @@
 // =========================
-// ParkGuard — Guard Portal JS (FINAL MERGED)
-// Frontend folder separated from backend
-// Backend URL:
+// ParkGuard — Guard Portal JS (FINAL)
+// Works on Render + Local (NO localhost hardcode)
 // =========================
-const API_BASE = "http://localhost:5001";
+
+// ✅ IMPORTANT: Don't hardcode localhost in production
+const API_BASE = ""; // same domain
 
 // =========================
 // Theme
@@ -13,6 +14,7 @@ function setTheme(theme){
   localStorage.setItem("pg_theme", theme);
 }
 setTheme(localStorage.getItem("pg_theme") || "dark");
+
 document.getElementById("btnTheme")?.addEventListener("click", () => {
   const cur = document.documentElement.getAttribute("data-theme");
   setTheme(cur === "dark" ? "light" : "dark");
@@ -38,7 +40,6 @@ function formatPlate(s){
 plateInput?.addEventListener("input", () => {
   const raw = normalizePlate(plateInput.value);
 
-  // format nicely (visual only)
   const pretty = raw.replace(
     /^([A-Z]{0,2})(\d{0,2})([A-Z]{0,2})(\d{0,4}).*/,
     (_, a, b, c, d) => [a, b, c, d].filter(Boolean).join(" ")
@@ -101,15 +102,9 @@ function vibrate(pattern = [80, 40, 80]){
 }
 
 // =========================
-// Local storage (only used for theme + optional offline)
-// =========================
-const KEY_ALERTS = "pg_alerts";
-
-// =========================
 // Backend <-> UI mapping
 // =========================
 function mapFromBackend(a){
-  // backend uses _id and ISO strings
   return {
     id: a._id || a.id,
     plate: a.plate,
@@ -126,7 +121,6 @@ function mapFromBackend(a){
 }
 
 function mapToBackend(a){
-  // only send what backend expects
   return {
     plate: normalizePlate(a.plate),
     property: a.property,
@@ -141,14 +135,12 @@ function mapToBackend(a){
 // State
 // =========================
 let alerts = [];
-let lastAlertCount = 0;
 
 // =========================
 // UI refs
 // =========================
 const alertsList = document.getElementById("alertsList");
 
-// Search
 const searchBox = document.getElementById("searchBox");
 let searchText = "";
 searchBox?.addEventListener("input", () => {
@@ -156,7 +148,6 @@ searchBox?.addEventListener("input", () => {
   render();
 });
 
-// Status filter
 const statusFilter = document.getElementById("statusFilter");
 let statusValue = "all";
 statusFilter?.addEventListener("change", () => {
@@ -164,7 +155,6 @@ statusFilter?.addEventListener("change", () => {
   render();
 });
 
-// Last updated indicator
 const lastUpdatedEl = document.getElementById("lastUpdated");
 let lastUpdatedTime = Date.now();
 
@@ -179,13 +169,9 @@ function updateLastUpdated(){
 function minsSince(ts){
   return Math.max(0, Math.round((Date.now() - ts)/60000));
 }
-
-// NEW badge for 60s
 function isNewAlert(a){
   return (Date.now() - a.createdAt) <= 60 * 1000;
 }
-
-// Blink only High for 20s
 function shouldBlink(a){
   return a.urgency === "High" && (Date.now() - a.createdAt) <= 20 * 1000;
 }
@@ -259,14 +245,6 @@ function render(){
             <button class="btn small" data-action="resolve" data-id="${a.id}">Resolve</button>
             <button class="btn small" data-action="escalate" data-id="${a.id}">Escalate</button>
           </div>
-
-          <div class="chips">
-            <span class="chip">Plate: ${formatPlate(a.plate)}</span>
-            <span class="chip">Property: ${a.property}</span>
-            <span class="chip ${a.urgency === "High" ? "chip-urgent" : ""}">
-              Urgency: ${a.urgency}
-            </span>
-          </div>
         </div>
       `;
     })
@@ -276,7 +254,7 @@ function render(){
 }
 
 // =========================
-// Backend API
+// Backend API (✅ FIXED)
 // =========================
 async function apiGetAlerts(){
   const res = await fetch(`${API_BASE}/api/alerts`);
@@ -311,49 +289,17 @@ async function initialLoad(){
   try{
     const data = await apiGetAlerts();
     alerts = Array.isArray(data) ? data.map(mapFromBackend) : [];
-    lastAlertCount = alerts.length;
-
-    // If DB empty, keep UI clean (no forced demo)
     render();
   }catch(err){
     console.log("Backend not reachable:", err?.message);
-    showToast("Offline mode", "Backend not reachable. UI still works (no DB sync).");
-    // optional offline fallback
-    try{
-      const local = JSON.parse(localStorage.getItem(KEY_ALERTS) || "[]");
-      alerts = Array.isArray(local) ? local : [];
-      lastAlertCount = alerts.length;
-      render();
-    }catch{}
+    showToast("Offline", "API not reachable.");
   }
 }
 
 initialLoad();
 
 // =========================
-// Sync from other tab (local only)
-// =========================
-channel?.addEventListener("message", async (event) => {
-  if(event.data?.type === "alerts_updated"){
-    // We prefer backend as source of truth
-    try{
-      const data = await apiGetAlerts();
-      alerts = Array.isArray(data) ? data.map(mapFromBackend) : [];
-      lastAlertCount = alerts.length;
-      render();
-    }catch{}
-  }
-});
-
-// =========================
-// Confirm helper
-// =========================
-function confirmAction(text){
-  return window.confirm(text);
-}
-
-// =========================
-// Click actions (status updates -> DB)
+// Click actions
 // =========================
 alertsList?.addEventListener("click", async (e) => {
   const btn = e.target.closest("button");
@@ -372,24 +318,24 @@ alertsList?.addEventListener("click", async (e) => {
     }
 
     if(action === "resolve"){
-      if(!confirmAction("Mark this alert as RESOLVED?")) return;
+      if(!window.confirm("Mark this alert as RESOLVED?")) return;
       alert.status = "resolved";
       await apiPatchAlert(alert.id, { status: alert.status });
       showToast("Resolved", "Alert marked as resolved.");
     }
 
     if(action === "escalate"){
-      if(!confirmAction("Escalate this alert? (Use if driver not responding)")) return;
+      if(!window.confirm("Escalate this alert?")) return;
       alert.status = "escalated";
       await apiPatchAlert(alert.id, { status: alert.status });
-      showToast("Escalated", "Escalation triggered (call/SMS tomorrow).");
+      showToast("Escalated", "Escalation triggered.");
       beep();
       vibrate([120, 60, 120]);
     }
 
     render();
-  }catch(err){
-    showToast("Server error", "Could not update. Check backend running.");
+  }catch{
+    showToast("Server error", "Could not update. Check API.");
   }
 });
 
@@ -404,60 +350,36 @@ document.getElementById("btnAddSample")?.addEventListener("click", async () => {
   ];
   const pick = samples[Math.floor(Math.random() * samples.length)];
 
-  const newAlertUI = {
-    plate: normalizePlate(pick.plate),
-    property: pick.property,
-    zone: pick.zone,
-    reason: pick.reason,
-    urgency: pick.urgency,
-    note: "Auto-sample generated for demo.",
-  };
-
   try{
-    const saved = await apiCreateAlert(newAlertUI);
-    const mapped = mapFromBackend(saved);
+    const saved = await apiCreateAlert({
+      plate: normalizePlate(pick.plate),
+      property: pick.property,
+      zone: pick.zone,
+      reason: pick.reason,
+      urgency: pick.urgency,
+      note: "Auto-sample generated."
+    });
 
+    const mapped = mapFromBackend(saved);
     alerts.unshift(mapped);
 
-    // Notifications for new incoming
     if(mapped.urgency === "High"){
       beep();
       vibrate([120, 60, 120]);
       showToast("High urgency ⚠️", `New alert: ${formatPlate(mapped.plate)}`);
     }else{
       vibrate([60]);
-      showToast("New alert ✅", `Sent: ${formatPlate(mapped.plate)}`);
+      showToast("Sent ✅", `Alert: ${formatPlate(mapped.plate)}`);
     }
 
-    lastAlertCount = alerts.length;
     render();
   }catch{
-    showToast("Server error", "Could not create sample. Check backend.");
+    showToast("Error", "Could not create sample.");
   }
 });
 
 // =========================
-// Demo fill
-// =========================
-document.getElementById("btnFillDemo")?.addEventListener("click", () => {
-  if(plateInput) plateInput.value = "MH12CD2020";
-  document.getElementById("property").value = "Green Residency";
-  document.getElementById("zone").value = "Reserved";
-  document.getElementById("reason").value = "Private / Reserved Slot";
-  document.getElementById("urgency").value = "Normal";
-  document.getElementById("note").value = "Please move within 5 minutes to avoid towing.";
-  showToast("Demo filled", "Now click Send Alert.");
-});
-
-// Clear form
-document.getElementById("btnClear")?.addEventListener("click", () => {
-  document.getElementById("alertForm").reset();
-  if(plateInput) plateInput.value = "";
-  showToast("Cleared", "Form reset.");
-});
-
-// =========================
-// Submit (create alert -> DB)
+// Submit form -> create alert
 // =========================
 document.getElementById("alertForm")?.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -470,30 +392,22 @@ document.getElementById("alertForm")?.addEventListener("submit", async (e) => {
   const note = document.getElementById("note").value.trim();
 
   if(!plate || !property || !zone || !reason){
-    showToast("Missing fields", "Please fill plate, property, zone and reason.");
+    showToast("Missing", "Fill plate, property, zone and reason.");
     return;
   }
 
-  const newAlertUI = {
-    plate,
-    property,
-    zone,
-    reason,
-    urgency,
-    note
-  };
-
   try{
-    const saved = await apiCreateAlert(mapToBackend(newAlertUI));
-    const mapped = mapFromBackend(saved);
+    const saved = await apiCreateAlert(mapToBackend({
+      plate, property, zone, reason, urgency, note
+    }));
 
+    const mapped = mapFromBackend(saved);
     alerts.unshift(mapped);
 
-    // notifications
     if(mapped.urgency === "High"){
       beep();
       vibrate([120, 60, 120]);
-      showToast("High urgency ⚠️", `New alert: ${formatPlate(mapped.plate)}`);
+      showToast("High urgency ⚠️", `Sent: ${formatPlate(mapped.plate)}`);
     }else{
       vibrate([60]);
       showToast("Alert sent ✅", `Sent: ${formatPlate(mapped.plate)}`);
@@ -501,37 +415,16 @@ document.getElementById("alertForm")?.addEventListener("submit", async (e) => {
 
     e.target.reset();
     if(plateInput) plateInput.value = "";
-
-    lastAlertCount = alerts.length;
     render();
-  }catch(err){
-    showToast("Server error", "Could not send alert. Is backend running?");
+  }catch{
+    showToast("Server error", "Could not send alert.");
   }
 });
 
-// =========================
-// Keyboard shortcuts
-// =========================
-document.addEventListener("keydown", (e) => {
-  if(e.key === "/" && document.activeElement?.tagName !== "INPUT" && document.activeElement?.tagName !== "TEXTAREA"){
-    e.preventDefault();
-    searchBox?.focus();
-  }
-  if(e.key === "Escape"){
-    if(searchBox && searchBox.value){
-      searchBox.value = "";
-      searchText = "";
-      render();
-      showToast("Search cleared", "Showing all alerts.");
-    }
-  }
-});
-
-// =========================
-// Auto refresh UI and updated timer
-// =========================
+// Auto refresh UI
 setInterval(render, 10000);
 
+// Updated text timer
 setInterval(() => {
   if(!lastUpdatedEl) return;
   const secs = Math.floor((Date.now() - lastUpdatedTime) / 1000);

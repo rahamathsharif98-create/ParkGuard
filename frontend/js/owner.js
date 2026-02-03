@@ -1,4 +1,9 @@
-const API_BASE = "http://localhost:5001";
+// =========================
+// ParkGuard — Owner Portal JS (FINAL)
+// Works on Render + Local (NO localhost hardcode)
+// =========================
+
+const API_BASE = ""; // ✅ same domain
 
 // Theme
 function setTheme(theme){
@@ -106,7 +111,7 @@ function plateFromURL(){
   return p ? normalizePlate(p) : "";
 }
 
-// API
+// ✅ API (FIXED)
 async function apiGetAlerts(){
   const res = await fetch(`${API_BASE}/api/alerts`);
   if(!res.ok) throw new Error("Failed to load alerts");
@@ -182,7 +187,6 @@ function showCard(alertObj){
   cardMeta2.textContent = `Created ${minsSince(createdTs)} min ago • Urgency: ${current.urgency}`;
   cardStatusChip.innerHTML = statusChip(current.status);
 
-  // show last response if exists
   if(current.ownerResponse){
     cardMeta3.style.display = "block";
     cardMeta3.innerHTML = `Your last response: <b>${current.ownerResponse}</b>`;
@@ -190,7 +194,6 @@ function showCard(alertObj){
     cardMeta3.style.display = "none";
   }
 
-  // note
   if(current.note){
     cardNote.style.display = "block";
     cardNote.textContent = `Note: ${current.note}`;
@@ -206,7 +209,6 @@ function findByPlate(plate){
   const p = normalizePlate(plate);
   const matches = allAlerts.filter(a => normalizePlate(a.plate) === p);
 
-  // KPIs
   kpiFound.textContent = matches.length;
 
   if(matches.length){
@@ -242,7 +244,7 @@ async function refreshData(showToastMsg=false){
       kpiStatus.textContent = "—";
     }
   }catch{
-    showToast("Server offline", "Backend not reachable. Keep backend running.");
+    showToast("Server offline", "Backend not reachable.");
   }
 }
 
@@ -265,7 +267,6 @@ btnRefresh?.addEventListener("click", async () => {
 alertCard?.addEventListener("click", async (e) => {
   const btn = e.target.closest("button[data-response]");
   if(!btn || !current) return;
-
   const msg = btn.getAttribute("data-response");
   document.getElementById("customResponse").value = msg;
   showToast("Selected", "Now tap Send Response.");
@@ -287,17 +288,14 @@ document.getElementById("btnSendResponse")?.addEventListener("click", async () =
   try{
     await apiPatchAlert(current._id || current.id, {
       status: "responded",
-      ownerResponse: custom,
-      respondedAt: new Date().toISOString()
+      ownerResponse: custom
     });
 
     showToast("Sent ✅", "Your response was delivered to the guard.");
     await refreshData(false);
-
-    // re-find
     findByPlate(normalizePlate(ownerPlate.value));
   }catch{
-    showToast("Error", "Could not send response. Check backend.");
+    showToast("Error", "Could not send response.");
   }
 });
 
