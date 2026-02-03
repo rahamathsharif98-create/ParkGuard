@@ -19,24 +19,28 @@ app.get("/api/health", (req, res) => {
 
 app.use("/api/alerts", require("./routes/alerts"));
 
-// ✅ Serve frontend (public folder)
-const publicPath = path.join(__dirname, "public");
-app.use(express.static(publicPath));
+// ✅ Serve FRONTEND folder (ParkGuard/frontend)
+const frontendPath = path.join(__dirname, "../frontend");
+app.use(express.static(frontendPath));
 
-// ✅ Default route -> index.html
+// ✅ Pages
 app.get("/", (req, res) => {
-  res.sendFile(path.join(publicPath, "index.html"));
+  res.sendFile(path.join(frontendPath, "index.html"));
 });
 
-// ✅ If user opens /guard -> redirect to guard.html (optional)
 app.get("/guard", (req, res) => {
-  res.redirect("/guard.html");
+  res.sendFile(path.join(frontendPath, "guard.html"));
 });
 
-// ✅ Any other route -> index.html (prevents refresh errors)
+app.get("/owner", (req, res) => {
+  res.sendFile(path.join(frontendPath, "owner.html"));
+});
+
+// ✅ Fallback (prevents refresh 404 on Render)
 app.get("*", (req, res) => {
-  res.sendFile(path.join(publicPath, "index.html"));
+  res.sendFile(path.join(frontendPath, "index.html"));
 });
 
+// ✅ IMPORTANT: Render uses process.env.PORT
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`✅ ParkGuard running at http://localhost:${PORT}`));
